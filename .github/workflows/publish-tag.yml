@@ -23,9 +23,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - name: Get the tag name
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
       - name: Publish sub repo
         env:
           EW_GIT_ME_TOKEN: ${{ secrets.EW_GIT_ME_TOKEN }}
-          TAG_NAME: ${{ github.event.release.tag_name }}
-        run: ./script/publish.sh "$EW_GIT_ME_TOKEN" "tag" "$BRANCH_NAME"
+          TAG_NAME: ${{ env.TAG }}
+        run: ./script/publish.sh "$EW_GIT_ME_TOKEN" "tag" "$TAG_NAME"
 
