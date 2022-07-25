@@ -1,4 +1,4 @@
-# Mongo Repo 1
+# Mono Repo 1
 
 This is main repo to test mono repo push
 
