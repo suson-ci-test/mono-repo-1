@@ -5,11 +5,11 @@ EW_GIT_ME_USER_NAME="EwGitMe";
 EW_GIT_ME_EMAIL="ewgitme@gmail.com";
 
 # Type must be one of branch or tag
-DEPLOYMENT_TYPE=$2;
+DEPLOYMENT_TYPE=${2:-"branch"};
 # Name must be branch name or tag name
-DEPLOYMENT_NAME=$3;
+DEPLOYMENT_NAME=${3:-"main"};
 
-DEPLOYMENT_COMMIT_MESSAGE="export from mono-repo-1";
+DEPLOYMENT_COMMIT_MESSAGE=${4:-"export from mono-repo"};
 
 PROJECT_ROOT_DIR=$(pwd);
 
