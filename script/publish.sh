@@ -45,6 +45,15 @@ for key in ${!SUB_REPOS[@]}; do
     git config user.name ${EW_GIT_ME_USER_NAME};
     git config user.email ${EW_GIT_ME_EMAIL};
 
+    if [ "${DEPLOYMENT_TYPE}" == "tag" ];
+    then
+        echo "Updating dependency to ${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
+        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
+    else
+        echo "Updating dependency to dev-${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
+        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"dev-${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
+    fi
+
     echo "Adding files to git and commit";
     git add .;
     git commit -m "${DEPLOYMENT_COMMIT_MESSAGE}";
@@ -53,13 +62,9 @@ for key in ${!SUB_REPOS[@]}; do
     then
         echo "Tagging ${DEPLOYMENT_NAME}";
         git tag ${DEPLOYMENT_NAME};
-        echo "Updating dependency to ${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
-        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
     else
         echo "Checkout branch ${DEPLOYMENT_NAME}";
         git checkout -B ${DEPLOYMENT_NAME};
-        echo "Updating dependency to dev-${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
-        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"dev-${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
     fi
 
     echo "Pushing deployment ${DEPLOYMENT_NAME}";
@@ -68,6 +73,6 @@ for key in ${!SUB_REPOS[@]}; do
     echo "Cleaning publish work";
     cd "${PROJECT_ROOT_DIR}/src";
     rm -rf ${SUB_DIR_NAME};
-    mv "${SUB_DIR_NAME}_bkp" ${SUB_DIR_NAME};
+    mv "${SUB_DIR_NAME}_bkp" "${SUB_DIR_NAME}";
 done
 
