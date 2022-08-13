@@ -1,0 +1,13 @@
+{
+    "name": "mono-repo-1/repo3",
+    "authors": [
+        {
+            "name": "Suson Waiba",
+            "email": "susonwaiba@gmail.com"
+        }
+    ],
+    "require": {
+        "mono-repo-1/repo1": "dev-main",
+        "mono-repo-1/repo2": "dev-main"
+    }
+}
