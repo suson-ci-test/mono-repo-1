@@ -5,11 +5,14 @@ EW_GIT_ME_USER_NAME="EwGitMe";
 EW_GIT_ME_EMAIL="ewgitme@gmail.com";
 
 # Type must be one of branch or tag
-DEPLOYMENT_TYPE=$2;
+DEPLOYMENT_TYPE=${2:-"branch"};
 # Name must be branch name or tag name
-DEPLOYMENT_NAME=$3;
+DEPLOYMENT_NAME=${3:-"main"};
 
-DEPLOYMENT_COMMIT_MESSAGE="export from mono-repo-1";
+DEPENDENCY_PACKAGE_PREFIX=${4:-"mono-repo-1"};
+DEPENDENCY_PACKAGE_FILE_NAME=${5:-"composer.json"}
+
+DEPLOYMENT_COMMIT_MESSAGE=${6:-"export from mono-repo-1"};
 
 PROJECT_ROOT_DIR=$(pwd);
 
@@ -27,15 +30,14 @@ for key in ${!SUB_REPOS[@]}; do
     cd "${PROJECT_ROOT_DIR}/src";
 
     echo "Copying files to backup";
+    rm -rf "${SUB_DIR_NAME}/.git";
     mv ${SUB_DIR_NAME} "${SUB_DIR_NAME}_bkp";
-    git clone ${SUB_DIR_REPO_URL} ${SUB_DIR_NAME};
 
-    echo "Cleaning git init from backup if exist";
-    rm -rf "${SUB_DIR_NAME}_bkp/.git";
+    echo "Clone fresh copy from git";
+    git clone ${SUB_DIR_REPO_URL} ${SUB_DIR_NAME};
 
     echo "Copying files from backup dir";
     cp -r "${SUB_DIR_NAME}_bkp/." "${SUB_DIR_NAME}/";
-    rm -rf "${SUB_DIR_NAME}_bkp";
 
     cd ${PROJECT_ROOT_DIR}/src/${SUB_DIR_NAME};
 
@@ -51,17 +53,21 @@ for key in ${!SUB_REPOS[@]}; do
     then
         echo "Tagging ${DEPLOYMENT_NAME}";
         git tag ${DEPLOYMENT_NAME};
+        echo "Updating dependency to ${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
+        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
     else
-       echo "Checkout branch ${DEPLOYMENT_NAME}";
+        echo "Checkout branch ${DEPLOYMENT_NAME}";
         git checkout -B ${DEPLOYMENT_NAME};
+        echo "Updating dependency to dev-${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
+        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"dev-${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
     fi
 
     echo "Pushing deployment ${DEPLOYMENT_NAME}";
-    git push origin ${DEPLOYMENT_NAME};
+    # git push origin ${DEPLOYMENT_NAME};
 
-    echo "Cleaning git init";
-    rm -rf ".git";
- 
-    cd ${PROJECT_ROOT_DIR};
+    echo "Cleaning publish work";
+    cd "${PROJECT_ROOT_DIR}/src";
+    rm -rf ${SUB_DIR_NAME};
+    mv "${SUB_DIR_NAME}_bkp" ${SUB_DIR_NAME};
 done
 
