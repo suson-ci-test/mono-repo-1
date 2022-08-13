@@ -63,7 +63,7 @@ for key in ${!SUB_REPOS[@]}; do
     fi
 
     echo "Pushing deployment ${DEPLOYMENT_NAME}";
-    # git push origin ${DEPLOYMENT_NAME};
+    git push origin ${DEPLOYMENT_NAME};
 
     echo "Cleaning publish work";
     cd "${PROJECT_ROOT_DIR}/src";
