@@ -59,6 +59,7 @@ for key in ${!SUB_REPOS[@]}; do
         echo "Checkout branch ${DEPLOYMENT_NAME}";
         git checkout -B ${DEPLOYMENT_NAME};
         echo "Updating dependency to dev-${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
+        sed --help;
         sed -i -r "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"dev-${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
     fi
 
