@@ -48,10 +48,10 @@ for key in ${!SUB_REPOS[@]}; do
     if [ "${DEPLOYMENT_TYPE}" == "tag" ];
     then
         echo "Updating dependency to ${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
-        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
+        sed -i -r "/${DEPENDENCY_PACKAGE_PREFIX}(.*?)\":/s/: \"(.*?)\"/: \"${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
     else
         echo "Updating dependency to dev-${DEPLOYMENT_NAME} on ${DEPENDENCY_PACKAGE_FILE_NAME}";
-        sed -i -E "/${DEPENDENCY_PACKAGE_PREFIX}/s/[^name]\": \"(.*?)\"/: \"dev-${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
+        sed -i -r "/${DEPENDENCY_PACKAGE_PREFIX}(.*?)\":/s/: \"(.*?)\"/: \"dev-${DEPLOYMENT_NAME}\"/g" ${DEPENDENCY_PACKAGE_FILE_NAME};
     fi
 
     echo "Adding files to git and commit";
